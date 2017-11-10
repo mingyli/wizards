@@ -1,4 +1,7 @@
 import argparse
+import random
+import numpy as np
+from itertools import combinations
 
 """
 ======================================================================
@@ -6,7 +9,7 @@ import argparse
 ======================================================================
 """
 
-def solve(num_wizards, num_constraints, wizards, constraints):
+def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=1e6):
     """
     Write your algorithm here.
     Input:
@@ -14,12 +17,73 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         num_constraints: Number of constraints
         wizards: An array of wizard names, in no particular order
         constraints: A 2D-array of constraints, 
-                     where constraints[0] may take the form ['A', 'B', 'C']i
+                     where constraints[0] may take the form ['A', 'B', 'C']
 
     Output:
         An array of wizard names in the ordering your algorithm returns
+
+
+    >>> wizards = ['w0', 'w1', 'w2']
+    >>> constraints = [('w0', 'w1', 'w2'), ('w1', 'w2', 'w0')]
+    >>> order = solve(len(wizards), len(constraints), wizards, constraints)
     """
-    return []
+
+    def ordered(state):
+        """Returns wizards in sorted order given the state graph."""
+
+    def is_conflict(constraint):
+        """Returns whether the state does not satisfy the constraint."""
+        wi, wj, wk = constraint    
+        i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+        return bool(state[k, i]) ^ bool(state[k, j])
+
+    # mapping from wizard name to index
+    wizard_index = {wizard: i for i, wizard in enumerate(wizards)}
+
+    # a state graph such that state[i, j] returns whether wizard i > wizard j
+    state = np.matlab.zeros((num_wizards, num_wizards))
+    for i in range(num_wizards):
+        for j in range(i):
+            state[i, j] = 1
+
+    prev_conflicts = None
+    for _ in range(MAX_ITER):
+        conflicts = sum(is_conflict(c) for c in constraints)
+
+        # terminal solution
+        if 0 == conflicts:
+            return ordered(state)
+
+        # local optimum
+        elif conflicts == prev_conflicts:
+            kick(state)
+
+        else:
+            # change state by greedily selecting least conflicts in neighborhood
+            # TODO consider expanding neighborhood to two changes,
+            #      randomly select among least conflicts in neighborhood
+
+            # search for position of least conflicts change
+            least_conflicts = conflicts
+            least_row, least_col = -1, -1
+            for i in range(num_wizards):
+                for j in range(i):
+                    # set state[i, j] to argmax conflicts
+                    state[i, j], state[j, i] = not state[i, j], not state[j, i]
+                    new_conflicts = sum(is_conflict(c) for c in constraints)
+                    if new_conflicts < least_conflicts:
+                        least_conflicts = new_conflicts
+                        least_row, least_col = i, j
+                    state[i, j], state[j, i] = not state[i, j], not state[j, i]
+
+            # update by least conflicts 
+            state[least_row, least_col] = not state[least_row, least_col] 
+            state[least_col, least_row] = not state[least_col, least_row] 
+
+        prev_conflicts = conflicts
+
+    # give up after MAX_ITER iterations
+    return ordered(state)
 
 """
 ======================================================================
