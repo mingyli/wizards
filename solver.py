@@ -146,7 +146,7 @@ def read_input(filename):
             # for w in c:
             #     wizards.add(w)
                 
-    # wizards = list(wizards)
+    wizards = list(set(wizards))
     return num_wizards, num_constraints, wizards, constraints
 
 def write_output(filename, solution):
