@@ -77,11 +77,23 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
     def toggle(i, j):
         state[i, j], state[j, i] = not state[i, j], not state[j, i]
 
+    def satisfy(constraint, left=True):
+        wi, wj, wk = constraint    
+        i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+        state[i, k], state[k, i] = left, not left
+        state[j, k], state[k, j] = left, not left
+
     def kick(state, strength=0.1):
-        for _ in range(int(num_wizards * strength)):
+        for _ in range(int(num_constraints * strength)):
+            """
             i, j = random.randrange(num_wizards), random.randrange(num_wizards)
             if state[i, j] is not None:
                 toggle(i, j)
+            """
+            constraint = random.choice(constraints)
+            wi, wj, wk = constraint
+            i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+            satisfy(constraint, left=random.random() < 0.5)
 
     # mapping from wizard name to index
     wizard_index = {wizard: i for i, wizard in enumerate(wizards)}
@@ -113,7 +125,8 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
 
         # local optimum
         elif conflicts == prev_conflicts:
-            kick(state, strength=0.5)
+            kick(state, strength=0.05)
+            print("kicked at", conflicts, "conflicts")
 
         else:
             # change state by greedily selecting least conflicts in neighborhood
@@ -125,6 +138,7 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
             n = 3
             best_conflicts = []
             """
+            Strategy: change a particular edge
             for i in range(num_wizards):
                 for j in range(i):
                     toggle(i, j)
@@ -139,22 +153,31 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
             _, i, j = random.choice(best_conflicts)
             toggle(i, j)
             """
+
+            # Strategy: satisfy a particular constraint, either left or right
             for constraint in constraints:
                 wi, wj, wk = constraint    
                 i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
-                toggle(i, k)
-                toggle(j, k)
-                new_conflicts = sum(is_conflict(c) for c in constraints)
-                if len(best_conflicts) == n:
-                    heapq.heappushpop(best_conflicts, (-new_conflicts, i, j, k))
+                store = state[i, k], state[k, i], state[j, k], state[k, j]
+
+                satisfy(constraint, left=True)
+                left_conflicts = sum(is_conflict(c) for c in constraints)
+                satisfy(constraint, left=False)
+                right_conflicts = sum(is_conflict(c) for c in constraints)
+                if left_conflicts > right_conflicts:
+                    new_conflicts, left = right_conflicts, False
                 else:
-                    heapq.heappush(best_conflicts, (-new_conflicts, i, j, k))
-                toggle(i, k)
-                toggle(j, k)
+                    new_conflicts, left = left_conflicts, True
+
+                if len(best_conflicts) == n:
+                    heapq.heappushpop(best_conflicts, (-new_conflicts, constraint, left))
+                else:
+                    heapq.heappush(best_conflicts, (-new_conflicts, constraint, left))
+
+                state[i, k], state[k, i], state[j, k], state[k, j] = store
             
-            _, i, j, k = random.choice(best_conflicts)
-            toggle(i, k)
-            toggle(j, k)
+            _, constraint, left = random.choice(best_conflicts)
+            satisfy(constraint, left)
 
         prev_conflicts = conflicts
 
