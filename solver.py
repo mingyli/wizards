@@ -38,6 +38,13 @@ def ordered(state):
             topological_sort(i)
     return [wizards[i] for i in stack]
 
+def kick(state):
+    for _ in range(num_wizards // 7):
+        i, j = random.randrange(num_wizards), random.randrange(num_wizards)
+        if state[i, j] is not None:
+            state[i, j] = not state[i, j]
+            state[j, i] = not state[j, i]
+
         
 def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
     """
@@ -80,6 +87,9 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
 
     prev_conflicts = None
     for _ in range(MAX_ITER):
+        print("iteration", _)
+        print("=============")
+        print("state graph", state)
         conflicts = sum(is_conflict(c) for c in constraints)
 
         # terminal solution
