@@ -1,5 +1,6 @@
 import argparse
 import random
+import heapq
 import numpy as np
 from itertools import combinations
 
@@ -27,7 +28,7 @@ def ordered(state):
     def topological_sort(w):
         """Use reverse postorder."""
         visited[w] = True
-        neighbors = [n for n in range(num_wizards) if state[w, n]]
+        neighbors = (n for n in range(num_wizards) if state[w, n])
         for neighbor in neighbors:
             if not visited[neighbor]:
                 topological_sort(neighbor)
@@ -120,26 +121,23 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
             # TODO consider expanding neighborhood to two changes,
             #      randomly select among least conflicts in neighborhood
 
-            # search for position of least conflicts change
-            least_conflicts = conflicts
-            least_row, least_col = -1, -1
+            # use a heap to get the n best conflict changes
+            # need to use a max heap to get the n changes with least conflicts
+            n = 3
+            best_conflicts = []
             for i in range(num_wizards):
                 for j in range(i):
-                    # set state[i, j] to argmax conflicts
-                    # state[i, j], state[j, i] = not state[i, j], not state[j, i]
                     toggle(i, j)
                     new_conflicts = sum(is_conflict(c) for c in constraints)
-                    if new_conflicts <= least_conflicts:
-                        least_conflicts = new_conflicts
-                        least_row, least_col = i, j
-                    # state[i, j], state[j, i] = not state[i, j], not state[j, i]
+                    if len(best_conflicts) == n:
+                        heapq.heappushpop(best_conflicts, (-new_conflicts, i, j))
+                    else:
+                        heapq.heappush(best_conflicts, (-new_conflicts, i, j))
                     toggle(i, j)
 
             # update by least conflicts 
-            # print("least conflicts", least_row, least_col)
-            # state[least_row, least_col] = not state[least_row, least_col] 
-            # state[least_col, least_row] = not state[least_col, least_row] 
-            toggle(least_row, least_col)
+            _, i, j = random.choice(best_conflicts)
+            toggle(i, j)
 
         prev_conflicts = conflicts
 
