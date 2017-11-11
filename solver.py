@@ -28,11 +28,11 @@ def ordered(state):
     def topological_sort(w):
         """Use reverse postorder."""
         visited[w] = True
-        neighbors = (n for n in range(num_wizards) if state[w, n])
+        neighbors = (n for n in range(num_wizards) if state[n, w])
         for neighbor in neighbors:
             if not visited[neighbor]:
                 topological_sort(neighbor)
-        stack.insert(0, w)
+        stack.append(w)
 
     visited = [False for _ in range(num_wizards)]
     stack = []
@@ -40,13 +40,6 @@ def ordered(state):
         if not visited[i]:
             topological_sort(i)
     return [wizards[i] for i in stack]
-
-def kick(state, strength=0.1):
-    for _ in range(int(num_wizards * strength)):
-        i, j = random.randrange(num_wizards), random.randrange(num_wizards)
-        if state[i, j] is not None:
-            state[i, j] = not state[i, j]
-            state[j, i] = not state[j, i]
 
         
 def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
@@ -84,6 +77,12 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
     def toggle(i, j):
         state[i, j], state[j, i] = not state[i, j], not state[j, i]
 
+    def kick(state, strength=0.1):
+        for _ in range(int(num_wizards * strength)):
+            i, j = random.randrange(num_wizards), random.randrange(num_wizards)
+            if state[i, j] is not None:
+                toggle(i, j)
+
     # mapping from wizard name to index
     wizard_index = {wizard: i for i, wizard in enumerate(wizards)}
 
@@ -94,8 +93,8 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
     for constraint in constraints:
         wi, wj, wk = constraint    
         i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
-        state[i, k], state[k, i] = True, False
-        state[j, k], state[k, j] = True, False
+        state[i, k], state[k, i] = False, True
+        state[j, k], state[k, j] = False, True
 
     prev_conflicts = None
     for _ in range(MAX_ITER):
@@ -125,6 +124,7 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
             # need to use a max heap to get the n changes with least conflicts
             n = 3
             best_conflicts = []
+            """
             for i in range(num_wizards):
                 for j in range(i):
                     toggle(i, j)
@@ -138,6 +138,23 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
             # update by least conflicts 
             _, i, j = random.choice(best_conflicts)
             toggle(i, j)
+            """
+            for constraint in constraints:
+                wi, wj, wk = constraint    
+                i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+                toggle(i, k)
+                toggle(j, k)
+                new_conflicts = sum(is_conflict(c) for c in constraints)
+                if len(best_conflicts) == n:
+                    heapq.heappushpop(best_conflicts, (-new_conflicts, i, j, k))
+                else:
+                    heapq.heappush(best_conflicts, (-new_conflicts, i, j, k))
+                toggle(i, k)
+                toggle(j, k)
+            
+            _, i, j, k = random.choice(best_conflicts)
+            toggle(i, k)
+            toggle(j, k)
 
         prev_conflicts = conflicts
 
@@ -182,8 +199,11 @@ if __name__=="__main__":
     try:
         solution = solve(num_wizards, num_constraints, wizards, constraints)
     except KeyboardInterrupt:
-        print("instance halted early. best result below.")
+        print("instance halted early. best state below.")
         print(best_state)
         solution = ordered(best_state[1])
 
     write_output(args.output_file, solution)
+    print("best state below.")
+    print(best_state)
+    print(solution)
