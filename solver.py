@@ -113,7 +113,7 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
                     # set state[i, j] to argmax conflicts
                     state[i, j], state[j, i] = not state[i, j], not state[j, i]
                     new_conflicts = sum(is_conflict(c) for c in constraints)
-                    if new_conflicts < least_conflicts:
+                    if new_conflicts <= least_conflicts:
                         least_conflicts = new_conflicts
                         least_row, least_col = i, j
                     state[i, j], state[j, i] = not state[i, j], not state[j, i]
