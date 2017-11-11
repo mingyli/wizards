@@ -28,7 +28,7 @@ def ordered(state):
         neighbors = [n for n in range(num_wizards) if state[w, n]]
         for neighbor in neighbors:
             if not visited[neighbor]:
-                topological_sort(neighbor, visited, stack)
+                topological_sort(neighbor)
         stack.insert(0, w)
 
     visited = [False for _ in range(num_wizards)]
@@ -71,6 +71,8 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
         """Returns whether the state does not satisfy the constraint."""
         wi, wj, wk = constraint    
         i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+        if state[k, i] is None or state[k, j] is None:
+            return True
         return bool(state[k, i]) ^ bool(state[k, j])
 
     # mapping from wizard name to index
@@ -79,7 +81,14 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
     # a state graph such that state[i, j] returns whether wizard i > wizard j
     # the value is None if we have not set the condition yet
     # conveniently, `not None` evaluates to True, which helps below
-    state = np.full((num_wizards, num_wizards), None)
+    state = np.matrix(np.full((num_wizards, num_wizards), None))
+    for constraint in constraints:
+        wi, wj, wk = constraint    
+        i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+        state[i, k] = True
+        state[k, i] = False
+        state[j, k] = True
+        state[k, j] = False
     # state = np.matlab.zeros((num_wizards, num_wizards))
     # for i in range(num_wizards):
     #     for j in range(i):
@@ -91,6 +100,8 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
         print("=============")
         print("state graph", state)
         conflicts = sum(is_conflict(c) for c in constraints)
+        
+        print("conflicts", conflicts)
 
         # terminal solution
         if 0 == conflicts:
@@ -119,6 +130,7 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
                     state[i, j], state[j, i] = not state[i, j], not state[j, i]
 
             # update by least conflicts 
+            print("least conflicts", least_row, least_col)
             state[least_row, least_col] = not state[least_row, least_col] 
             state[least_col, least_row] = not state[least_col, least_row] 
 
