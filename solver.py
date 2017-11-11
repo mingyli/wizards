@@ -9,6 +9,8 @@ from itertools import combinations
 ======================================================================
 """
 
+# for use when keyboard interrupt. (conflicts, state graph)
+best_state = (float("inf"), None)
 
 def ordered(state):
     """Returns wizards in sorted order given the state graph.
@@ -67,6 +69,9 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
     True
     """
 
+    # for use when keyboard interrupt
+    global best_state
+
     def is_conflict(constraint):
         """Returns whether the state does not satisfy the constraint."""
         wi, wj, wk = constraint    
@@ -74,6 +79,9 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
         if state[k, i] is None or state[k, j] is None:
             return True
         return bool(state[k, i]) ^ bool(state[k, j])
+
+    def toggle(i, j):
+        state[i, j], state[j, i] = not state[i, j], not state[j, i]
 
     # mapping from wizard name to index
     wizard_index = {wizard: i for i, wizard in enumerate(wizards)}
@@ -85,23 +93,19 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
     for constraint in constraints:
         wi, wj, wk = constraint    
         i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
-        state[i, k] = True
-        state[k, i] = False
-        state[j, k] = True
-        state[k, j] = False
-    # state = np.matlab.zeros((num_wizards, num_wizards))
-    # for i in range(num_wizards):
-    #     for j in range(i):
-    #         state[i, j] = 1
+        state[i, k], state[k, i] = True, False
+        state[j, k], state[k, j] = True, False
 
     prev_conflicts = None
     for _ in range(MAX_ITER):
-        print("iteration", _)
         print("=============")
-        print("state graph", state)
+        print("iteration", _)
+
         conflicts = sum(is_conflict(c) for c in constraints)
-        
         print("conflicts", conflicts)
+
+        if conflicts < best_state[0]:
+            best_state = (conflicts, state)
 
         # terminal solution
         if 0 == conflicts:
@@ -122,17 +126,20 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
             for i in range(num_wizards):
                 for j in range(i):
                     # set state[i, j] to argmax conflicts
-                    state[i, j], state[j, i] = not state[i, j], not state[j, i]
+                    # state[i, j], state[j, i] = not state[i, j], not state[j, i]
+                    toggle(i, j)
                     new_conflicts = sum(is_conflict(c) for c in constraints)
                     if new_conflicts <= least_conflicts:
                         least_conflicts = new_conflicts
                         least_row, least_col = i, j
-                    state[i, j], state[j, i] = not state[i, j], not state[j, i]
+                    # state[i, j], state[j, i] = not state[i, j], not state[j, i]
+                    toggle(i, j)
 
             # update by least conflicts 
-            print("least conflicts", least_row, least_col)
-            state[least_row, least_col] = not state[least_row, least_col] 
-            state[least_col, least_row] = not state[least_col, least_row] 
+            # print("least conflicts", least_row, least_col)
+            # state[least_row, least_col] = not state[least_row, least_col] 
+            # state[least_col, least_row] = not state[least_col, least_row] 
+            toggle(least_row, least_col)
 
         prev_conflicts = conflicts
 
@@ -173,5 +180,12 @@ if __name__=="__main__":
     args = parser.parse_args()
 
     num_wizards, num_constraints, wizards, constraints = read_input(args.input_file)
-    solution = solve(num_wizards, num_constraints, wizards, constraints)
+
+    try:
+        solution = solve(num_wizards, num_constraints, wizards, constraints)
+    except KeyboardInterrupt:
+        print("instance halted early. best result below.")
+        print(best_state)
+        solution = ordered(best_state[1])
+
     write_output(args.output_file, solution)
