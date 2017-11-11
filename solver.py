@@ -9,7 +9,44 @@ from itertools import combinations
 ======================================================================
 """
 
-def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=1e6):
+
+def ordered(state):
+    """Returns wizards in sorted order given the state graph.
+    
+    >>> wizards = ['A', 'B', 'C']
+    >>> num_wizards = len(wizards)
+    >>> state = np.matrix([[None, 1, 1], [0, None, 1], [0, 0, None]])
+    >>> ordered(state)
+    ['A', 'B', 'C']
+
+    To topologically sort, need to take wizard that is greater than 
+    the highest number of wizards.
+    """
+    def topological_sort(w):
+        """Use reverse postorder."""
+        visited[w] = True
+        neighbors = [n for n in range(num_wizards) if state[w, n]]
+        for neighbor in neighbors:
+            if not visited[neighbor]:
+                topological_sort(neighbor, visited, stack)
+        stack.insert(0, w)
+
+    visited = [False for _ in range(num_wizards)]
+    stack = []
+    for i in range(num_wizards):
+        if not visited[i]:
+            topological_sort(i)
+    return [wizards[i] for i in stack]
+
+def kick(state):
+    for _ in range(num_wizards // 7):
+        i, j = random.randrange(num_wizards), random.randrange(num_wizards)
+        if state[i, j] is not None:
+            state[i, j] = not state[i, j]
+            state[j, i] = not state[j, i]
+
+        
+def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
     """
     Write your algorithm here.
     Input:
@@ -23,13 +60,12 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=1e6):
         An array of wizard names in the ordering your algorithm returns
 
 
-    >>> wizards = ['w0', 'w1', 'w2']
+    >>> wizards = ['w1', 'w2', 'w0']
     >>> constraints = [('w0', 'w1', 'w2'), ('w1', 'w2', 'w0')]
     >>> order = solve(len(wizards), len(constraints), wizards, constraints)
+    >>> order == ['w1', 'w2', 'w0'] or order == ['w0', 'w2', 'w1']
+    True
     """
-
-    def ordered(state):
-        """Returns wizards in sorted order given the state graph."""
 
     def is_conflict(constraint):
         """Returns whether the state does not satisfy the constraint."""
@@ -41,13 +77,19 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=1e6):
     wizard_index = {wizard: i for i, wizard in enumerate(wizards)}
 
     # a state graph such that state[i, j] returns whether wizard i > wizard j
-    state = np.matlab.zeros((num_wizards, num_wizards))
-    for i in range(num_wizards):
-        for j in range(i):
-            state[i, j] = 1
+    # the value is None if we have not set the condition yet
+    # conveniently, `not None` evaluates to True, which helps below
+    state = np.full((num_wizards, num_wizards), None)
+    # state = np.matlab.zeros((num_wizards, num_wizards))
+    # for i in range(num_wizards):
+    #     for j in range(i):
+    #         state[i, j] = 1
 
     prev_conflicts = None
     for _ in range(MAX_ITER):
+        print("iteration", _)
+        print("=============")
+        print("state graph", state)
         conflicts = sum(is_conflict(c) for c in constraints)
 
         # terminal solution
@@ -71,7 +113,7 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=1e6):
                     # set state[i, j] to argmax conflicts
                     state[i, j], state[j, i] = not state[i, j], not state[j, i]
                     new_conflicts = sum(is_conflict(c) for c in constraints)
-                    if new_conflicts < least_conflicts:
+                    if new_conflicts <= least_conflicts:
                         least_conflicts = new_conflicts
                         least_row, least_col = i, j
                     state[i, j], state[j, i] = not state[i, j], not state[j, i]
@@ -94,16 +136,17 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=1e6):
 def read_input(filename):
     with open(filename) as f:
         num_wizards = int(f.readline())
+        wizards = f.readline().split()
         num_constraints = int(f.readline())
         constraints = []
-        wizards = set()
+        # wizards = set()
         for _ in range(num_constraints):
             c = f.readline().split()
             constraints.append(c)
-            for w in c:
-                wizards.add(w)
+            # for w in c:
+            #     wizards.add(w)
                 
-    wizards = list(wizards)
+    wizards = list(set(wizards))
     return num_wizards, num_constraints, wizards, constraints
 
 def write_output(filename, solution):
