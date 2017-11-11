@@ -41,8 +41,8 @@ def ordered(state):
             topological_sort(i)
     return [wizards[i] for i in stack]
 
-def kick(state):
-    for _ in range(num_wizards // 7):
+def kick(state, strength=0.1):
+    for _ in range(int(num_wizards * strength)):
         i, j = random.randrange(num_wizards), random.randrange(num_wizards)
         if state[i, j] is not None:
             state[i, j] = not state[i, j]
@@ -114,7 +114,7 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
 
         # local optimum
         elif conflicts == prev_conflicts:
-            kick(state)
+            kick(state, strength=0.5)
 
         else:
             # change state by greedily selecting least conflicts in neighborhood
