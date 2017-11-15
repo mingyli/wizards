@@ -26,7 +26,8 @@ def ordered(state):
     def topological_sort(w):
         """Use reverse postorder."""
         visited[w] = True
-        neighbors = (n for n in range(num_wizards) if state[n, w])
+        neighbors = [n for n in range(num_wizards) if state[n, w]]
+        random.shuffle(neighbors)
         for neighbor in neighbors:
             if not visited[neighbor]:
                 topological_sort(neighbor)
@@ -34,7 +35,9 @@ def ordered(state):
 
     visited = [False for _ in range(num_wizards)]
     stack = []
-    for i in range(num_wizards):
+    vertices = list(range(num_wizards))
+    random.shuffle(vertices)
+    for i in vertices:
         if not visited[i]:
             topological_sort(i)
     return [wizards[i] for i in stack]
