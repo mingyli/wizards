@@ -226,15 +226,15 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
 def read_input(filename):
     with open(filename) as f:
         num_wizards = int(f.readline())
-        wizards = f.readline().split()
+        # wizards = f.readline().split()
         num_constraints = int(f.readline())
         constraints = []
-        # wizards = set()
+        wizards = set()
         for _ in range(num_constraints):
             c = f.readline().split()
             constraints.append(c)
-            # for w in c:
-            #     wizards.add(w)
+            for w in c:
+                wizards.add(w)
                 
     wizards = list(set(wizards))
     return num_wizards, num_constraints, wizards, constraints
