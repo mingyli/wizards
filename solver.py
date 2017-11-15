@@ -76,7 +76,7 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
             visited[w] = True
             ancestors.add(w)
             neighbors = [n for n in range(num_wizards) if state[n, w]]
-            random.shuffle[neighbors]
+            random.shuffle(neighbors)
             for neighbor in neighbors:
                 if neighbor in ancestors: # flip edge
                     toggle(neighbor, w)
