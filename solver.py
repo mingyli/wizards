@@ -75,7 +75,8 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
         def dfs(w):
             visited[w] = True
             ancestors.add(w)
-            neighbors = (n for n in range(num_wizards) if state[n, w])
+            neighbors = [n for n in range(num_wizards) if state[n, w]]
+            random.shuffle[neighbors]
             for neighbor in neighbors:
                 if neighbor in ancestors: # flip edge
                     toggle(neighbor, w)
@@ -86,7 +87,9 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
 
         visited = [False for _ in range(num_wizards)]
         ancestors = set()
-        for i in range(num_wizards):
+        vertices = list(range(num_wizards))
+        random.shuffle(vertices)
+        for i in vertices:
             if not visited[i]:
                 dfs(i)
 
