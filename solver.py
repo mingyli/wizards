@@ -2,6 +2,7 @@ import argparse
 import random
 import heapq
 import numpy as np
+import itertools
 from itertools import combinations
 
 """
@@ -43,7 +44,7 @@ def ordered(state):
     return [wizards[i] for i in stack]
 
         
-def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=99999):
+def solve(num_wizards, num_constraints, wizards, constraints):
     """
     Write your algorithm here.
     Input:
@@ -133,7 +134,7 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=99999):
         state[j, k], state[k, j] = False, True
 
     prev_conflicts = None
-    for _ in range(MAX_ITER):
+    for _ in itertools.count():
         print("=============")
         print("iteration", _)
 
