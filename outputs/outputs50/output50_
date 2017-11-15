@@ -1,0 +1,23 @@
+=============
+iteration 0
+conflicts 149
+=============
+iteration 1
+conflicts 145
+instance halted early. best state below.
+(145, matrix([[None, True, None, ..., None, None, False],
+        [False, None, True, ..., None, None, False],
+        [None, False, None, ..., True, True, None],
+        ..., 
+        [None, None, False, ..., None, False, True],
+        [None, None, False, ..., True, None, False],
+        [True, True, None, ..., False, True, None]], dtype=object))
+best state below.
+(145, matrix([[None, True, None, ..., None, None, False],
+        [False, None, True, ..., None, None, False],
+        [None, False, None, ..., True, True, None],
+        ..., 
+        [None, None, False, ..., None, False, True],
+        [None, None, False, ..., True, None, False],
+        [True, True, None, ..., False, True, None]], dtype=object))
+['Joshua', 'Felicia', 'Aiden', 'Sara', 'Morgan', 'Julianne', 'Vickie', 'Jonathan', 'Kerry', 'Debora', 'Alma', 'Olga', 'Ali', 'Tessa', 'Warren', 'Reef', 'Marshall', 'Elliot', 'Shelley', 'Kay', 'Roger', 'Tommie', 'Monty', 'Phyllis', 'Bradley', 'Danny', 'Grant', 'Evie', 'Abel', 'Will', 'Vanessa', 'Geoffrey', 'Betsy', 'Gavin', 'Finn', 'Lucas', 'Cory', 'Kassandra', 'Jeri', 'Lola', 'Tatiana', 'Curtis', 'Everett', 'Nevaeh', 'Ronnie', 'Arrie', 'Lynn', 'June', 'Lydia', 'Julia']

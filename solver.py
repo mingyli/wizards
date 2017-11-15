@@ -43,7 +43,7 @@ def ordered(state):
     return [wizards[i] for i in stack]
 
         
-def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
+def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=99999):
     """
     Write your algorithm here.
     Input:
