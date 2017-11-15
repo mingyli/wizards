@@ -22,8 +22,6 @@ def ordered(state):
     >>> ordered(state)
     ['A', 'B', 'C']
 
-    To topologically sort, need to take wizard that is greater than 
-    the highest number of wizards.
     """
     def topological_sort(w):
         """Use reverse postorder."""
@@ -66,6 +64,29 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
     # for use when keyboard interrupt
     global best_state
 
+    def toggle(i, j):
+        state[i, j], state[j, i] = not state[i, j], not state[j, i]
+
+    def fix_cycles(state):
+        """Detect cycle and flip edge to fix cycle."""
+        def dfs(w):
+            visited[w] = True
+            ancestors.add(w)
+            neighbors = (n for n in range(num_wizards) if state[n, w])
+            for neighbor in neighbors:
+                if neighbor in ancestors: # flip edge
+                    toggle(neighbor, w)
+                    return
+                if not visited[neighbor]:
+                    dfs(neighbor)
+            ancestors.remove(w)
+
+        visited = [False for _ in range(num_wizards)]
+        ancestors = set()
+        for i in range(num_wizards):
+            if not visited[i]:
+                dfs(i)
+
     def is_conflict(constraint):
         """Returns whether the state does not satisfy the constraint."""
         wi, wj, wk = constraint    
@@ -73,9 +94,6 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
         if state[k, i] is None or state[k, j] is None:
             return True
         return bool(state[k, i]) ^ bool(state[k, j])
-
-    def toggle(i, j):
-        state[i, j], state[j, i] = not state[i, j], not state[j, i]
 
     def satisfy(constraint, left=True):
         wi, wj, wk = constraint    
@@ -121,7 +139,12 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
 
         # terminal solution
         if 0 == conflicts:
-            return ordered(state)
+            print("attempting to fix cycle")
+            fix_cycles(state)
+            conflicts = sum(is_conflict(c) for c in constraints)
+            print("conflicts after fixing cycle is", conflicts)
+            if 0 == conflicts:
+                return ordered(state)
 
         # local optimum
         elif conflicts == prev_conflicts:
@@ -158,8 +181,11 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
             for constraint in constraints:
                 wi, wj, wk = constraint    
                 i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+
+                # store for reset at end of iteration
                 store = state[i, k], state[k, i], state[j, k], state[k, j]
 
+                # compare whether satisfying left or right is better
                 satisfy(constraint, left=True)
                 left_conflicts = sum(is_conflict(c) for c in constraints)
                 satisfy(constraint, left=False)
@@ -169,6 +195,7 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
                 else:
                     new_conflicts, left = left_conflicts, True
 
+                # update heap with best n values
                 if len(best_conflicts) == n:
                     heapq.heappushpop(best_conflicts, (-new_conflicts, constraint, left))
                 else:
