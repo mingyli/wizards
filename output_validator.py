@@ -14,13 +14,15 @@ def processInput(input_file, output_file):
     fout = open(output_file, "r")
 
     num_wiz_in_input = int(fin.readline().split()[0])
-    input_wizard_set = set(fin.readline().split())
+    # input_wizard_set = set(fin.readline().split())
+    input_wizard_set = set()
     num_constraints = int(fin.readline().split()[0])
 
     output_ordering = fout.readline().split()
     output_ordering_set = set(output_ordering)
     output_ordering_map = {k: v for v, k in enumerate(output_ordering)}
 
+    input_wizard_set = set(output_ordering)
 
     if (len(output_ordering_set) != num_wiz_in_input):
         return "Input file has unique {} wizards, but output file has {}".format(num_wiz_in_input, len(output_ordering_set))
