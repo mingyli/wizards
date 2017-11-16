@@ -130,8 +130,8 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     for constraint in constraints:
         wi, wj, wk = constraint    
         i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
-        state[i, k], state[k, i] = False, True
-        state[j, k], state[k, j] = False, True
+        state[i, k], state[k, i] = (False, True) if random.random() < 0.5 else (True, False)
+        state[j, k], state[k, j] = (False, True) if random.random() < 0.5 else (True, False)
 
     prev_conflicts = None
     for _ in itertools.count():
