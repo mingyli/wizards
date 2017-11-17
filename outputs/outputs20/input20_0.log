@@ -1,0 +1,333 @@
+=============
+iteration 0
+conflicts 233
+=============
+iteration 1
+conflicts 210
+=============
+iteration 2
+conflicts 194
+=============
+iteration 3
+conflicts 179
+=============
+iteration 4
+conflicts 165
+=============
+iteration 5
+conflicts 158
+=============
+iteration 6
+conflicts 149
+=============
+iteration 7
+conflicts 142
+=============
+iteration 8
+conflicts 136
+=============
+iteration 9
+conflicts 131
+=============
+iteration 10
+conflicts 125
+=============
+iteration 11
+conflicts 120
+=============
+iteration 12
+conflicts 117
+=============
+iteration 13
+conflicts 114
+=============
+iteration 14
+conflicts 111
+=============
+iteration 15
+conflicts 108
+=============
+iteration 16
+conflicts 105
+=============
+iteration 17
+conflicts 102
+=============
+iteration 18
+conflicts 99
+=============
+iteration 19
+conflicts 96
+=============
+iteration 20
+conflicts 93
+=============
+iteration 21
+conflicts 88
+=============
+iteration 22
+conflicts 86
+=============
+iteration 23
+conflicts 80
+=============
+iteration 24
+conflicts 78
+=============
+iteration 25
+conflicts 76
+=============
+iteration 26
+conflicts 73
+=============
+iteration 27
+conflicts 71
+=============
+iteration 28
+conflicts 69
+=============
+iteration 29
+conflicts 67
+=============
+iteration 30
+conflicts 65
+=============
+iteration 31
+conflicts 63
+=============
+iteration 32
+conflicts 61
+=============
+iteration 33
+conflicts 59
+=============
+iteration 34
+conflicts 57
+=============
+iteration 35
+conflicts 55
+=============
+iteration 36
+conflicts 52
+=============
+iteration 37
+conflicts 50
+=============
+iteration 38
+conflicts 46
+=============
+iteration 39
+conflicts 43
+=============
+iteration 40
+conflicts 41
+=============
+iteration 41
+conflicts 38
+=============
+iteration 42
+conflicts 36
+=============
+iteration 43
+conflicts 34
+=============
+iteration 44
+conflicts 33
+=============
+iteration 45
+conflicts 32
+=============
+iteration 46
+conflicts 31
+=============
+iteration 47
+conflicts 28
+=============
+iteration 48
+conflicts 26
+=============
+iteration 49
+conflicts 24
+=============
+iteration 50
+conflicts 22
+=============
+iteration 51
+conflicts 19
+=============
+iteration 52
+conflicts 14
+=============
+iteration 53
+conflicts 12
+=============
+iteration 54
+conflicts 9
+=============
+iteration 55
+conflicts 8
+=============
+iteration 56
+conflicts 7
+=============
+iteration 57
+conflicts 5
+=============
+iteration 58
+conflicts 4
+=============
+iteration 59
+conflicts 3
+=============
+iteration 60
+conflicts 2
+=============
+iteration 61
+conflicts 1
+=============
+iteration 62
+conflicts 1
+kicked at 1 conflicts
+=============
+iteration 63
+conflicts 103
+=============
+iteration 64
+conflicts 86
+=============
+iteration 65
+conflicts 74
+=============
+iteration 66
+conflicts 61
+=============
+iteration 67
+conflicts 50
+=============
+iteration 68
+conflicts 40
+=============
+iteration 69
+conflicts 33
+=============
+iteration 70
+conflicts 27
+=============
+iteration 71
+conflicts 22
+=============
+iteration 72
+conflicts 17
+=============
+iteration 73
+conflicts 13
+=============
+iteration 74
+conflicts 10
+=============
+iteration 75
+conflicts 5
+=============
+iteration 76
+conflicts 2
+=============
+iteration 77
+conflicts 2
+kicked at 2 conflicts
+=============
+iteration 78
+conflicts 113
+=============
+iteration 79
+conflicts 93
+=============
+iteration 80
+conflicts 83
+=============
+iteration 81
+conflicts 68
+=============
+iteration 82
+conflicts 57
+=============
+iteration 83
+conflicts 47
+=============
+iteration 84
+conflicts 41
+=============
+iteration 85
+conflicts 36
+=============
+iteration 86
+conflicts 30
+=============
+iteration 87
+conflicts 26
+=============
+iteration 88
+conflicts 21
+=============
+iteration 89
+conflicts 17
+=============
+iteration 90
+conflicts 11
+=============
+iteration 91
+conflicts 7
+=============
+iteration 92
+conflicts 4
+=============
+iteration 93
+conflicts 2
+=============
+iteration 94
+conflicts 0
+attempting to fix cycle
+conflicts after fixing cycle is 0
+best state below.
+(0, matrix([[None, True, True, True, True, True, True, True, True, True, True,
+         False, True, False, True, True, True, True, True, False],
+        [False, None, False, False, True, False, True, False, False, False,
+         False, False, False, False, False, False, False, False, None, False],
+        [False, True, None, False, True, False, True, False, False, False,
+         False, False, False, False, True, False, False, False, None, False],
+        [False, True, True, None, True, True, True, True, False, True, True,
+         False, True, False, True, True, True, True, True, False],
+        [False, False, False, False, None, False, False, False, False,
+         False, False, False, False, False, False, False, False, False,
+         False, False],
+        [False, True, True, False, True, None, True, True, False, True,
+         False, False, True, False, True, True, True, False, True, False],
+        [False, False, False, False, True, False, None, False, False, False,
+         False, False, False, False, False, False, False, False, False,
+         False],
+        [False, True, True, False, True, False, True, None, False, True,
+         False, False, True, False, True, True, True, False, True, False],
+        [False, True, True, True, True, True, True, True, None, True, True,
+         False, True, False, True, True, True, True, True, False],
+        [False, True, True, False, True, False, True, False, False, None,
+         False, False, False, False, True, False, True, False, True, False],
+        [False, True, True, False, True, True, True, True, False, True,
+         None, False, True, False, True, True, True, False, None, False],
+        [True, True, True, True, True, True, True, True, True, True, True,
+         None, True, False, True, True, True, True, True, False],
+        [False, True, True, False, True, False, True, False, False, True,
+         False, False, None, False, True, None, None, False, None, False],
+        [True, True, True, True, True, True, True, True, True, True, True,
+         True, True, None, True, True, True, True, True, False],
+        [False, True, False, False, True, False, True, False, False, False,
+         False, False, False, False, None, False, False, False, False, False],
+        [False, True, True, False, True, False, True, False, False, True,
+         False, False, None, False, True, None, None, False, None, False],
+        [False, True, True, False, True, False, True, False, False, False,
+         False, False, None, False, True, None, None, False, None, False],
+        [False, True, True, False, True, True, True, True, False, True,
+         True, False, True, False, True, True, True, None, True, False],
+        [False, None, None, False, True, False, True, False, False, False,
+         None, False, None, False, True, None, None, False, None, False],
+        [True, True, True, True, True, True, True, True, True, True, True,
+         True, True, True, True, True, True, True, True, None]], dtype=object))
+['Oisin', 'Daragh', 'Paris', 'Ruben', 'Skylar', 'Lianne', 'Mckenna', 'Wesley', 'Pam', 'Joni', 'Gene', 'Dominick', 'Ayesha', 'Chase', 'Carla', 'Curt', 'Amari', 'Janette', 'Conner', 'Neal']

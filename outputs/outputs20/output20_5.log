@@ -1,0 +1,268 @@
+=============
+iteration 0
+conflicts 148
+=============
+iteration 1
+conflicts 143
+=============
+iteration 2
+conflicts 138
+=============
+iteration 3
+conflicts 131
+=============
+iteration 4
+conflicts 127
+=============
+iteration 5
+conflicts 123
+=============
+iteration 6
+conflicts 119
+=============
+iteration 7
+conflicts 113
+=============
+iteration 8
+conflicts 109
+=============
+iteration 9
+conflicts 106
+=============
+iteration 10
+conflicts 103
+=============
+iteration 11
+conflicts 98
+=============
+iteration 12
+conflicts 93
+=============
+iteration 13
+conflicts 91
+=============
+iteration 14
+conflicts 89
+=============
+iteration 15
+conflicts 87
+=============
+iteration 16
+conflicts 85
+=============
+iteration 17
+conflicts 83
+=============
+iteration 18
+conflicts 80
+=============
+iteration 19
+conflicts 78
+=============
+iteration 20
+conflicts 76
+=============
+iteration 21
+conflicts 74
+=============
+iteration 22
+conflicts 72
+=============
+iteration 23
+conflicts 70
+=============
+iteration 24
+conflicts 67
+=============
+iteration 25
+conflicts 64
+=============
+iteration 26
+conflicts 62
+=============
+iteration 27
+conflicts 60
+=============
+iteration 28
+conflicts 58
+=============
+iteration 29
+conflicts 57
+=============
+iteration 30
+conflicts 55
+=============
+iteration 31
+conflicts 54
+=============
+iteration 32
+conflicts 53
+=============
+iteration 33
+conflicts 52
+=============
+iteration 34
+conflicts 51
+=============
+iteration 35
+conflicts 50
+=============
+iteration 36
+conflicts 50
+kicked at 50 conflicts
+=============
+iteration 37
+conflicts 93
+=============
+iteration 38
+conflicts 88
+=============
+iteration 39
+conflicts 82
+=============
+iteration 40
+conflicts 78
+=============
+iteration 41
+conflicts 74
+=============
+iteration 42
+conflicts 70
+=============
+iteration 43
+conflicts 66
+=============
+iteration 44
+conflicts 61
+=============
+iteration 45
+conflicts 57
+=============
+iteration 46
+conflicts 54
+=============
+iteration 47
+conflicts 51
+=============
+iteration 48
+conflicts 50
+=============
+iteration 49
+conflicts 50
+kicked at 50 conflicts
+=============
+iteration 50
+conflicts 80
+=============
+iteration 51
+conflicts 74
+=============
+iteration 52
+conflicts 65
+=============
+iteration 53
+conflicts 61
+=============
+iteration 54
+conflicts 58
+=============
+iteration 55
+conflicts 56
+=============
+iteration 56
+conflicts 55
+=============
+iteration 57
+conflicts 54
+=============
+iteration 58
+conflicts 53
+=============
+iteration 59
+conflicts 50
+=============
+iteration 60
+conflicts 49
+instance halted early. best state below.
+(49, matrix([[None, False, False, False, False, False, False, False, False, True,
+         False, False, False, False, False, False, False, False, True, False],
+        [True, None, False, False, True, False, True, True, True, True,
+         False, True, True, True, True, False, True, True, True, True],
+        [True, True, None, None, True, False, True, True, True, True, False,
+         False, True, False, True, False, False, True, True, True],
+        [True, True, None, None, True, True, True, False, True, True, False,
+         True, True, True, None, False, False, True, True, False],
+        [True, False, False, False, None, False, False, None, None, False,
+         False, False, True, None, False, False, True, False, True, False],
+        [True, True, True, False, True, None, True, True, True, True, True,
+         True, True, False, True, True, True, False, True, False],
+        [True, False, False, False, True, False, None, None, False, False,
+         False, False, True, False, False, False, False, False, False, False],
+        [True, False, False, True, None, False, None, None, False, False,
+         False, False, True, False, True, False, False, False, None, False],
+        [True, False, False, False, None, False, True, True, None, False,
+         False, False, True, True, True, False, False, False, True, False],
+        [False, False, False, False, True, False, True, True, True, None,
+         False, True, False, False, True, False, False, True, True, False],
+        [True, True, True, True, True, False, True, True, True, True, None,
+         True, True, True, True, False, True, True, True, False],
+        [True, False, True, False, True, False, True, True, True, False,
+         False, None, True, True, False, False, False, False, True, False],
+        [True, False, False, False, False, False, False, False, False, True,
+         False, False, None, False, True, False, False, False, True, False],
+        [True, False, True, False, None, True, True, True, False, True,
+         False, False, True, None, True, True, False, True, True, False],
+        [True, False, False, None, True, False, True, False, False, False,
+         False, True, False, False, None, False, False, True, True, True],
+        [True, True, True, True, True, False, True, True, True, True, True,
+         True, True, False, True, None, False, True, True, False],
+        [True, False, True, True, False, False, True, True, True, True,
+         False, True, True, True, True, True, None, True, True, True],
+        [True, False, False, False, True, True, True, True, True, False,
+         False, True, True, False, False, False, False, None, False, True],
+        [False, False, False, False, False, False, True, None, False, False,
+         False, False, False, False, False, False, False, True, None, False],
+        [True, False, False, True, True, True, True, True, True, True, True,
+         True, True, True, False, True, False, False, True, None]], dtype=object))
+best state below.
+(49, matrix([[None, False, False, False, False, False, False, False, False, True,
+         False, False, False, False, False, False, False, False, True, False],
+        [True, None, False, False, True, False, True, True, True, True,
+         False, True, True, True, True, False, True, True, True, True],
+        [True, True, None, None, True, False, True, True, True, True, False,
+         False, True, False, True, False, False, True, True, True],
+        [True, True, None, None, True, True, True, False, True, True, False,
+         True, True, True, None, False, False, True, True, False],
+        [True, False, False, False, None, False, False, None, None, False,
+         False, False, True, None, False, False, True, False, True, False],
+        [True, True, True, False, True, None, True, True, True, True, True,
+         True, True, False, True, True, True, False, True, False],
+        [True, False, False, False, True, False, None, None, False, False,
+         False, False, True, False, False, False, False, False, False, False],
+        [True, False, False, True, None, False, None, None, False, False,
+         False, False, True, False, True, False, False, False, None, False],
+        [True, False, False, False, None, False, True, True, None, False,
+         False, False, True, True, True, False, False, False, True, False],
+        [False, False, False, False, True, False, True, True, True, None,
+         False, True, False, False, True, False, False, True, True, False],
+        [True, True, True, True, True, False, True, True, True, True, None,
+         True, True, True, True, False, True, True, True, False],
+        [True, False, True, False, True, False, True, True, True, False,
+         False, None, True, True, False, False, False, False, True, False],
+        [True, False, False, False, False, False, False, False, False, True,
+         False, False, None, False, True, False, False, False, True, False],
+        [True, False, True, False, None, True, True, True, False, True,
+         False, False, True, None, True, True, False, True, True, False],
+        [True, False, False, None, True, False, True, False, False, False,
+         False, True, False, False, None, False, False, True, True, True],
+        [True, True, True, True, True, False, True, True, True, True, True,
+         True, True, False, True, None, False, True, True, False],
+        [True, False, True, True, False, False, True, True, True, True,
+         False, True, True, True, True, True, None, True, True, True],
+        [True, False, False, False, True, True, True, True, True, False,
+         False, True, True, False, False, False, False, None, False, True],
+        [False, False, False, False, False, False, True, None, False, False,
+         False, False, False, False, False, False, False, True, None, False],
+        [True, False, False, True, True, True, True, True, True, True, True,
+         True, True, True, False, True, False, False, True, None]], dtype=object))
+['Gustavo', 'Caitlyn', 'Rashan', 'Maritza', 'Pandora', 'Lara', 'Leslie', 'Susanne', 'Vihan', 'Dane', 'Shawna', 'Cian', 'Zoey', 'Perla', 'Marcella', 'Deidre', 'Bruce', 'Kathryn', 'Alvin', 'Sterling']

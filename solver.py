@@ -1,6 +1,8 @@
 import argparse
 import random
+import heapq
 import numpy as np
+import itertools
 from itertools import combinations
 
 """
@@ -9,6 +11,8 @@ from itertools import combinations
 ======================================================================
 """
 
+# for use when keyboard interrupt. (conflicts, state graph)
+best_state = (float("inf"), None)
 
 def ordered(state):
     """Returns wizards in sorted order given the state graph.
@@ -19,34 +23,28 @@ def ordered(state):
     >>> ordered(state)
     ['A', 'B', 'C']
 
-    To topologically sort, need to take wizard that is greater than 
-    the highest number of wizards.
     """
     def topological_sort(w):
         """Use reverse postorder."""
         visited[w] = True
-        neighbors = [n for n in range(num_wizards) if state[w, n]]
+        neighbors = [n for n in range(num_wizards) if state[n, w]]
+        random.shuffle(neighbors)
         for neighbor in neighbors:
             if not visited[neighbor]:
-                topological_sort(neighbor, visited, stack)
-        stack.insert(0, w)
+                topological_sort(neighbor)
+        stack.append(w)
 
     visited = [False for _ in range(num_wizards)]
     stack = []
-    for i in range(num_wizards):
+    vertices = list(range(num_wizards))
+    random.shuffle(vertices)
+    for i in vertices:
         if not visited[i]:
             topological_sort(i)
     return [wizards[i] for i in stack]
 
-def kick(state):
-    for _ in range(num_wizards // 7):
-        i, j = random.randrange(num_wizards), random.randrange(num_wizards)
-        if state[i, j] is not None:
-            state[i, j] = not state[i, j]
-            state[j, i] = not state[j, i]
-
         
-def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
+def solve(num_wizards, num_constraints, wizards, constraints):
     """
     Write your algorithm here.
     Input:
@@ -67,11 +65,60 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
     True
     """
 
+    # for use when keyboard interrupt
+    global best_state
+
+    def toggle(i, j):
+        state[i, j], state[j, i] = not state[i, j], not state[j, i]
+
+    def fix_cycles(state):
+        """Detect cycle and flip edge to fix cycle."""
+        def dfs(w):
+            visited[w] = True
+            ancestors.add(w)
+            neighbors = [n for n in range(num_wizards) if state[n, w]]
+            random.shuffle(neighbors)
+            for neighbor in neighbors:
+                if neighbor in ancestors: # flip edge
+                    toggle(neighbor, w)
+                    return
+                if not visited[neighbor]:
+                    dfs(neighbor)
+            ancestors.remove(w)
+
+        visited = [False for _ in range(num_wizards)]
+        ancestors = set()
+        vertices = list(range(num_wizards))
+        random.shuffle(vertices)
+        for i in vertices:
+            if not visited[i]:
+                dfs(i)
+
     def is_conflict(constraint):
         """Returns whether the state does not satisfy the constraint."""
         wi, wj, wk = constraint    
         i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+        if state[k, i] is None or state[k, j] is None:
+            return True
         return bool(state[k, i]) ^ bool(state[k, j])
+
+    def satisfy(constraint, left=True):
+        wi, wj, wk = constraint    
+        i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+        state[i, k], state[k, i] = left, not left
+        state[j, k], state[k, j] = left, not left
+
+    def kick(state, strength=0.1):
+        for _ in range(int(num_constraints * strength)):
+            """
+            i, j = random.randrange(num_wizards), random.randrange(num_wizards)
+            if state[i, j] is not None:
+                toggle(i, j)
+            """
+            constraint = random.choice(constraints)
+            wi, wj, wk = constraint
+            i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+            satisfy(constraint, left=random.random() < 0.5)
 
     # mapping from wizard name to index
     wizard_index = {wizard: i for i, wizard in enumerate(wizards)}
@@ -79,48 +126,92 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
     # a state graph such that state[i, j] returns whether wizard i > wizard j
     # the value is None if we have not set the condition yet
     # conveniently, `not None` evaluates to True, which helps below
-    state = np.full((num_wizards, num_wizards), None)
-    # state = np.matlab.zeros((num_wizards, num_wizards))
-    # for i in range(num_wizards):
-    #     for j in range(i):
-    #         state[i, j] = 1
+    state = np.matrix(np.full((num_wizards, num_wizards), None))
+    for constraint in constraints:
+        wi, wj, wk = constraint    
+        i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+        state[i, k], state[k, i] = (False, True) if random.random() < 0.5 else (True, False)
+        state[j, k], state[k, j] = (False, True) if random.random() < 0.5 else (True, False)
 
     prev_conflicts = None
-    for _ in range(MAX_ITER):
-        print("iteration", _)
+    for _ in itertools.count():
         print("=============")
-        print("state graph", state)
+        print("iteration", _)
+
         conflicts = sum(is_conflict(c) for c in constraints)
+        print("conflicts", conflicts)
+
+        if conflicts < best_state[0]:
+            best_state = (conflicts, state)
 
         # terminal solution
         if 0 == conflicts:
-            return ordered(state)
+            print("attempting to fix cycle")
+            fix_cycles(state)
+            conflicts = sum(is_conflict(c) for c in constraints)
+            print("conflicts after fixing cycle is", conflicts)
+            if 0 == conflicts:
+                return ordered(state)
 
         # local optimum
         elif conflicts == prev_conflicts:
-            kick(state)
+            kick(state, strength=0.05)
+            print("kicked at", conflicts, "conflicts")
 
         else:
             # change state by greedily selecting least conflicts in neighborhood
             # TODO consider expanding neighborhood to two changes,
             #      randomly select among least conflicts in neighborhood
 
-            # search for position of least conflicts change
-            least_conflicts = conflicts
-            least_row, least_col = -1, -1
+            # use a heap to get the n best conflict changes
+            # need to use a max heap to get the n changes with least conflicts
+            n = 3
+            best_conflicts = []
+            """
+            Strategy: change a particular edge
             for i in range(num_wizards):
                 for j in range(i):
-                    # set state[i, j] to argmax conflicts
-                    state[i, j], state[j, i] = not state[i, j], not state[j, i]
+                    toggle(i, j)
                     new_conflicts = sum(is_conflict(c) for c in constraints)
-                    if new_conflicts <= least_conflicts:
-                        least_conflicts = new_conflicts
-                        least_row, least_col = i, j
-                    state[i, j], state[j, i] = not state[i, j], not state[j, i]
+                    if len(best_conflicts) == n:
+                        heapq.heappushpop(best_conflicts, (-new_conflicts, i, j))
+                    else:
+                        heapq.heappush(best_conflicts, (-new_conflicts, i, j))
+                    toggle(i, j)
 
             # update by least conflicts 
-            state[least_row, least_col] = not state[least_row, least_col] 
-            state[least_col, least_row] = not state[least_col, least_row] 
+            _, i, j = random.choice(best_conflicts)
+            toggle(i, j)
+            """
+
+            # Strategy: satisfy a particular constraint, either left or right
+            for constraint in constraints:
+                wi, wj, wk = constraint    
+                i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
+
+                # store for reset at end of iteration
+                store = state[i, k], state[k, i], state[j, k], state[k, j]
+
+                # compare whether satisfying left or right is better
+                satisfy(constraint, left=True)
+                left_conflicts = sum(is_conflict(c) for c in constraints)
+                satisfy(constraint, left=False)
+                right_conflicts = sum(is_conflict(c) for c in constraints)
+                if left_conflicts > right_conflicts:
+                    new_conflicts, left = right_conflicts, False
+                else:
+                    new_conflicts, left = left_conflicts, True
+
+                # update heap with best n values
+                if len(best_conflicts) == n:
+                    heapq.heappushpop(best_conflicts, (-new_conflicts, constraint, left))
+                else:
+                    heapq.heappush(best_conflicts, (-new_conflicts, constraint, left))
+
+                state[i, k], state[k, i], state[j, k], state[k, j] = store
+            
+            _, constraint, left = random.choice(best_conflicts)
+            satisfy(constraint, left)
 
         prev_conflicts = conflicts
 
@@ -136,15 +227,15 @@ def solve(num_wizards, num_constraints, wizards, constraints, MAX_ITER=9999):
 def read_input(filename):
     with open(filename) as f:
         num_wizards = int(f.readline())
-        wizards = f.readline().split()
+        # wizards = f.readline().split()
         num_constraints = int(f.readline())
         constraints = []
-        # wizards = set()
+        wizards = set()
         for _ in range(num_constraints):
             c = f.readline().split()
             constraints.append(c)
-            # for w in c:
-            #     wizards.add(w)
+            for w in c:
+                wizards.add(w)
                 
     wizards = list(set(wizards))
     return num_wizards, num_constraints, wizards, constraints
@@ -161,5 +252,15 @@ if __name__=="__main__":
     args = parser.parse_args()
 
     num_wizards, num_constraints, wizards, constraints = read_input(args.input_file)
-    solution = solve(num_wizards, num_constraints, wizards, constraints)
+
+    try:
+        solution = solve(num_wizards, num_constraints, wizards, constraints)
+    except KeyboardInterrupt:
+        print("instance halted early. best state below.")
+        print(best_state)
+        solution = ordered(best_state[1])
+
     write_output(args.output_file, solution)
+    print("best state below.")
+    print(best_state)
+    print(solution)
