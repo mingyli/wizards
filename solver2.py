@@ -41,20 +41,23 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     def successors(conflicts):
         """Generator for the successor states. 
         Varies based on the number of conflicts remaining.
-        Does not actually return successors, but mutates `wizards` 
-        to save on space."""
+        Does not actually return successors to save on space. 
+        Returns a sequence of swaps."""
         for i, j in itertools.combinations(range(num_wizards), 2):
-            swap(i, j)
-
+            yield ((i, j),)
+        if conflicts < 10:
+            for i, j, k in itertools.combinations(range(num_wizards), 3):
+                yield ((i, j), (j, k))
+            """
+            for i, j in itertools.combinations(range(num_wizards), 2):
+                for k, l in itertools.combinations(range(num_wizards), 2):
+                    yield ((i, j), (k, l))
+            """
 
     for _ in itertools.count():
-
         print("=============")
         print("iteration", _)
         print("conflicts", sum(is_conflict(constraint) for constraint in constraints))
-
-        n = 9
-        least_conflicts = []
 
         conflicts = num_conflicts()
         if 0 == conflicts:
@@ -62,8 +65,13 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         if conflicts < best_state[0]:
             best_state = (conflicts, wizards.copy())
 
-        for i, j in itertools.combinations(range(num_wizards), 2):
-            swap(i, j)
+        n = 9 if conflicts > 10 else 29
+        least_conflicts = [(float("-inf"), None)] * n
+
+        for swaps in successors(conflicts):
+            # test these swaps
+            for i, j in swaps: swap(i, j)
+
             new_conflicts = num_conflicts()
 
             # terminate early
@@ -71,21 +79,19 @@ def solve(num_wizards, num_constraints, wizards, constraints):
                 best_state = (0, wizards.copy())
                 return wizards
 
-            swap(i, j)
+            # undo changes
+            for i, j in reversed(swaps): swap(i, j)
 
-            if len(least_conflicts) == n:
-                heapq.heappushpop(least_conflicts, (-new_conflicts, i, j))
-            else:
-                heapq.heappush(least_conflicts, (-new_conflicts, i, j))
+            heapq.heappushpop(least_conflicts, (-new_conflicts, swaps))
 
-        # if stagnant then kick
-        # if all(least_conflicts[0][0] == t[0] for t in least_conflicts):
         if all(-conflicts == t[0] for t in least_conflicts):
+            # if stagnant then kick
             kick(strength=1)
             print("kicked at conflicts", conflicts)
         else:
-            _, i, j = random.choice(least_conflicts)
-            swap(i, j)
+            # commit to swaps
+            _, swaps = random.choice(least_conflicts)
+            for i, j in swaps: swap(i, j)
     return wizards
 
 
