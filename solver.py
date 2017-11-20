@@ -142,7 +142,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         print("conflicts", conflicts)
 
         if conflicts < best_state[0]:
-            best_state = (conflicts, state)
+            best_state = (conflicts, np.copy(state))
 
         # terminal solution
         if 0 == conflicts:
