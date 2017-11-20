@@ -25,13 +25,27 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         wizards[i], wizards[j] = wizards[j], wizards[i]
 
     def kick(strength=3):
+        conflicts = [constraint for constraint in constraints if is_conflict(constraint)]
+        for wa, wb, wc in random.choices(conflicts, k=strength):
+            # in a b c swap either a c or b c
+            a, b, c = wizard_index[wa], wizard_index[wb], wizard_index[wc]
+            if random.random() < 0.5: swap(a, c)
+            else: swap(b, c)
+        return 
         for _ in range(strength):
             i, j = random.sample(range(num_wizards), 2)
             swap(i, j)
             
-
-    random.shuffle(wizards)
     wizard_index = {wizard: i for i, wizard in enumerate(wizards)}
+
+    def successors(conflicts):
+        """Generator for the successor states. 
+        Varies based on the number of conflicts remaining.
+        Does not actually return successors, but mutates `wizards` 
+        to save on space."""
+        for i, j in itertools.combinations(range(num_wizards), 2):
+            swap(i, j)
+
 
     for _ in itertools.count():
 
@@ -39,7 +53,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         print("iteration", _)
         print("conflicts", sum(is_conflict(constraint) for constraint in constraints))
 
-        n = 7
+        n = 9
         least_conflicts = []
 
         conflicts = num_conflicts()
@@ -54,6 +68,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
 
             # terminate early
             if 0 == new_conflicts:
+                best_state = (0, wizards.copy())
                 return wizards
 
             swap(i, j)
@@ -63,11 +78,10 @@ def solve(num_wizards, num_constraints, wizards, constraints):
             else:
                 heapq.heappush(least_conflicts, (-new_conflicts, i, j))
 
-
         # if stagnant then kick
         # if all(least_conflicts[0][0] == t[0] for t in least_conflicts):
         if all(-conflicts == t[0] for t in least_conflicts):
-            kick(strength=4)
+            kick(strength=1)
             print("kicked at conflicts", conflicts)
         else:
             _, i, j = random.choice(least_conflicts)
@@ -89,6 +103,7 @@ def read_input(filename):
                 wizards.add(w)
                 
     wizards = list(set(wizards))
+    random.shuffle(wizards)
     return num_wizards, num_constraints, wizards, constraints
 
 def write_output(filename, solution):
