@@ -2,7 +2,7 @@
 import argparse
 import random
 import heapq
-import numpy as np
+# import numpy as np
 import itertools
 from itertools import combinations
 
@@ -28,11 +28,14 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         nonlocal conflicts
 
         wizard_index[wizards[i]], wizard_index[wizards[j]] = wizard_index[wizards[j]], wizard_index[wizards[i]]
+
+        index_wizard[i], index_wizard[j] = index_wizard[j], index_wizard[i]
         wizards[i], wizards[j] = wizards[j], wizards[i]
 
-
+        old = conflicts
         # for each constraint that involves wizard i or wizard j
-        for constraint in set.union(wiz_to_constraints[i], wiz_to_constraints[j]):
+        for constraint in set.union(wiz_to_constraints[index_wizard[i]],
+                                    wiz_to_constraints[index_wizard[j]]):
             if constraint_states[constraint] and not is_conflict(constraint):
                 # if constraint was violated but is not anymore
                 conflicts -= 1
@@ -73,17 +76,17 @@ def solve(num_wizards, num_constraints, wizards, constraints):
             """
 
 
-
+    index_wizard = {i: wizard for i, wizard in enumerate(wizards)}
     wizard_index = {wizard: i for i, wizard in enumerate(wizards)}
 
     constraint_states = {constraint: is_conflict(constraint) for constraint in constraints}
 
-    wiz_to_constraints = {i: set() for i in range(len(wizards))}
+    wiz_to_constraints = {w: set() for w in wizards}
     # map from wizard name to set of constraints it's involved in
     for constraint in constraints:
         for w in constraint:
             # add the constraint tuple to the set for each of its wizards
-            wiz_to_constraints[wizard_index[w]].add(constraint)
+            wiz_to_constraints[w].add(constraint)
 
     print(len(set.union(*wiz_to_constraints.values())))
 
@@ -108,9 +111,11 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         n = 9 if conflicts >= 10 else 29
         least_conflicts = [(float("-inf"), None)] * n
 
-        pre_swap_conflicts = conflicts
+
 
         for swaps in successors(conflicts):
+            # pre_swap_conflicts = conflicts
+            # print("pre_swap_conflicts", pre_swap_conflicts)
             # test these swaps
             for i, j in swaps: swap(i, j)
 
@@ -124,9 +129,9 @@ def solve(num_wizards, num_constraints, wizards, constraints):
             # undo changes
             for i, j in reversed(swaps): swap(i, j)
 
-            post_swap_conflicts = conflicts
-
-            assert pre_swap_conflicts == post_swap_conflicts
+            # post_swap_conflicts = conflicts
+            # print("post_swap_conflicts", post_swap_conflicts)
+            # assert pre_swap_conflicts == post_swap_conflicts
 
             heapq.heappushpop(least_conflicts, (-new_conflicts, swaps))
 
