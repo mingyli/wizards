@@ -114,7 +114,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
             # test these swaps
             for i, j in swaps: swap(i, j)
 
-            new_conflicts = conflicts - pre_swap_conflicts
+            new_conflicts = conflicts
 
             # terminate early
             if 0 == conflicts:
@@ -123,6 +123,10 @@ def solve(num_wizards, num_constraints, wizards, constraints):
 
             # undo changes
             for i, j in reversed(swaps): swap(i, j)
+
+            post_swap_conflicts = conflicts
+
+            assert pre_swap_conflicts == post_swap_conflicts
 
             heapq.heappushpop(least_conflicts, (-new_conflicts, swaps))
 
