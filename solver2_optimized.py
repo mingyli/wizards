@@ -29,13 +29,12 @@ def solve(num_wizards, num_constraints, wizards, constraints):
 
         wizard_index[wizards[i]], wizard_index[wizards[j]] = wizard_index[wizards[j]], wizard_index[wizards[i]]
 
-        index_wizard[i], index_wizard[j] = index_wizard[j], index_wizard[i]
         wizards[i], wizards[j] = wizards[j], wizards[i]
 
         old = conflicts
         # for each constraint that involves wizard i or wizard j
-        for constraint in set.union(wiz_to_constraints[index_wizard[i]],
-                                    wiz_to_constraints[index_wizard[j]]):
+        for constraint in set.union(wiz_to_constraints[wizard[i]],
+                                    wiz_to_constraints[wizard[j]]):
             if constraint_states[constraint] and not is_conflict(constraint):
                 # if constraint was violated but is not anymore
                 conflicts -= 1
@@ -48,7 +47,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     def kick(strength=3):
         conflicts = [constraint for constraint in constraints if is_conflict(constraint)]
         # for wa, wb, wc in random.choices(conflicts, k=strength):
-        for wa, wb, wc in random.choice(conflicts):
+        for wa, wb, wc in [random.choice(conflicts)]:
             # in a b c swap either a c or b c
             a, b, c = wizard_index[wa], wizard_index[wb], wizard_index[wc]
             if random.random() < 0.5: swap(a, c)
@@ -78,7 +77,6 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         """
 
 
-    index_wizard = {i: wizard for i, wizard in enumerate(wizards)}
     wizard_index = {wizard: i for i, wizard in enumerate(wizards)}
 
     constraint_states = {constraint: is_conflict(constraint) for constraint in constraints}
@@ -92,7 +90,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
 
     print(len(set.union(*wiz_to_constraints.values())))
 
-    conflicts = sum([c for c in constraint_states.values()])
+    conflicts = sum(c for c in constraint_states.values())
     # print(len(constraints), len(set(constraints)), len(constraint_states))
     # print(constraints)
     # print(conflicts, sum([is_conflict(c) for c in constraints]))
