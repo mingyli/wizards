@@ -33,8 +33,8 @@ def solve(num_wizards, num_constraints, wizards, constraints):
 
         old = conflicts
         # for each constraint that involves wizard i or wizard j
-        for constraint in set.union(wiz_to_constraints[wizard[i]],
-                                    wiz_to_constraints[wizard[j]]):
+        for constraint in set.union(wiz_to_constraints[wizards[i]],
+                                    wiz_to_constraints[wizards[j]]):
             if constraint_states[constraint] and not is_conflict(constraint):
                 # if constraint was violated but is not anymore
                 conflicts -= 1
