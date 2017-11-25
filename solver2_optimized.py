@@ -169,20 +169,31 @@ def write_output(filename, solution):
         for wizard in solution:
             f.write("{0} ".format(wizard))
 
+def read_start_state(filename):
+    with open(filename) as f:
+        state = f.readline().split()
+    return state
+
+
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description = "Constraint Solver.")
     parser.add_argument("input_file", type=str, help = "___.in")
     parser.add_argument("output_file", type=str, help = "___.out")
+    parser.add_argument("--start_state_file", type=str, help = "___.out", default = None)
     args = parser.parse_args()
 
     num_wizards, num_constraints, wizards, constraints = read_input(args.input_file)
+
+    if (args.start_state_file != None):
+        wizards = read_start_state(args.start_state_file)
 
     try:
         solution = solve(num_wizards, num_constraints, wizards, constraints)
     except KeyboardInterrupt:
         print("instance halted early.")
         solution = best_state[1]
-
+    #test TODO remove this before distribution
+    print(solution)
     write_output(args.output_file, solution)
     print("best state below.")
     print(best_state)
