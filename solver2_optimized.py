@@ -169,9 +169,12 @@ def write_output(filename, solution):
         for wizard in solution:
             f.write("{0} ".format(wizard))
 
+#return order of the wizards from the order given in filename.out
+#state is a list of strings where each string corresponds to the name of the wizard
+#the position of the string in the list corresponds to the position of the wizard in the ordering
 def read_start_state(filename):
     with open(filename) as f:
-        state = f.readline().split()
+        state = f.readline().split() #separates by whitespace
     return state
 
 
@@ -179,7 +182,8 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(description = "Constraint Solver.")
     parser.add_argument("input_file", type=str, help = "___.in")
     parser.add_argument("output_file", type=str, help = "___.out")
-    parser.add_argument("--start_state_file", type=str, help = "___.out", default = None)
+    parser.add_argument("-s", "--start_state_file", type=str, help = "___.out") #optional
+    #need to type -s before argument in command line
     args = parser.parse_args()
 
     num_wizards, num_constraints, wizards, constraints = read_input(args.input_file)
@@ -192,8 +196,7 @@ if __name__=="__main__":
     except KeyboardInterrupt:
         print("instance halted early.")
         solution = best_state[1]
-    #test TODO remove this before distribution
-    print(solution)
+
     write_output(args.output_file, solution)
     print("best state below.")
     print(best_state)
