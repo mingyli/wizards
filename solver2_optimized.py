@@ -33,8 +33,8 @@ def solve(num_wizards, num_constraints, wizards, constraints):
 
         old = conflicts
         # for each constraint that involves wizard i or wizard j
-        for constraint in set.union(wiz_to_constraints[wizard[i]],
-                                    wiz_to_constraints[wizard[j]]):
+        for constraint in set.union(wiz_to_constraints[wizards[i]],
+                                    wiz_to_constraints[wizards[j]]):
             if constraint_states[constraint] and not is_conflict(constraint):
                 # if constraint was violated but is not anymore
                 conflicts -= 1
@@ -169,13 +169,27 @@ def write_output(filename, solution):
         for wizard in solution:
             f.write("{0} ".format(wizard))
 
+#return order of the wizards from the order given in filename.out
+#state is a list of strings where each string corresponds to the name of the wizard
+#the position of the string in the list corresponds to the position of the wizard in the ordering
+def read_start_state(filename):
+    with open(filename) as f:
+        state = f.readline().split() #separates by whitespace
+    return state
+
+
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description = "Constraint Solver.")
     parser.add_argument("input_file", type=str, help = "___.in")
     parser.add_argument("output_file", type=str, help = "___.out")
+    parser.add_argument("-s", "--start_state_file", type=str, help = "___.out") #optional
+    #need to type -s before argument in command line
     args = parser.parse_args()
 
     num_wizards, num_constraints, wizards, constraints = read_input(args.input_file)
+
+    if (args.start_state_file != None):
+        wizards = read_start_state(args.start_state_file)
 
     try:
         solution = solve(num_wizards, num_constraints, wizards, constraints)
