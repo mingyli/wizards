@@ -62,11 +62,11 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         """Generator for the successor states.
         Varies based on the number of conflicts remaining.
         Does not actually return successors to save on space.
-        Returns a sequence of swaps."""
-        i_s = random.sample(range(num_wizards), 99)
-        j_s = random.sample(range(num_wizards), 99)
-        for i, j in itertools.product(i_s, j_s):
-            yield ((i, j),)
+#        Returns a sequence of swaps."""
+#        i_s = random.sample(range(num_wizards), 99)
+#        j_s = random.sample(range(num_wizards), 99)
+#     for i, j in itertools.product(i_s, j_s):
+#:            yield ((i, j),)
         if num_conflicts <= 10:
             k_s = random.sample(range(num_wizards), 99)
             for i, j, k in itertools.product(i_s, j_s, k_s):
