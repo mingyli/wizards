@@ -58,24 +58,40 @@ def solve(num_wizards, num_constraints, wizards, constraints):
             swap(i, j)
 
 
-    def successors(conflicts):
+    def successors(num_conflicts):
         """Generator for the successor states.
         Varies based on the number of conflicts remaining.
         Does not actually return successors to save on space.
         Returns a sequence of swaps."""
+        i_s = random.sample(range(num_wizards), 99)
+        j_s = random.sample(range(num_wizards), 99)
+        for i, j in itertools.product(i_s, j_s):
+            yield ((i, j),)
+        if num_conflicts <= 10:
+            k_s = random.sample(range(num_wizards), 99)
+            for i, j, k in itertools.product(i_s, j_s, k_s):
+                yield ((i, j), (j, k))
+                yield ((j, k), (i, j))
+        """
         for i, j in itertools.combinations(range(num_wizards), 2):
             yield ((i, j),)
-        if conflicts <= 10:
+        if num_conflicts <= 10:
             for i, j, k in itertools.combinations(range(num_wizards), 3):
                 yield ((i, j), (j, k))
                 yield ((j, k), (i, j))
         """
-        if conflicts < 5:
-            for i, j in itertools.combinations(range(num_wizards), 2):
-                for k, l in itertools.combinations(range(num_wizards), 2):
-                    yield ((i, j), (k, l))
         """
-
+        if num_conflicts < 5:
+            conflicts = [constraint for constraint in constraints if is_conflict(constraint)]
+            conflicted = set()
+            for wi, wj, wk in conflicts:
+                conflicted.update([wizard_index[wi], wizard_index[wj], wizard_index[wk]])
+            print("len(conflicted):", len(conflicted))
+            for i in conflicted:
+                for j in random.sample(range(num_wizards), num_wizards // 5):
+                    for k, l in itertools.combinations(range(num_wizards), 2):
+                        yield ((i, j), (k, l))
+        """
 
     wizard_index = {wizard: i for i, wizard in enumerate(wizards)}
 
@@ -105,7 +121,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         # conflicts = num_conflicts()
         if 0 == conflicts:
             return wizards
-        if conflicts < best_state[0]:
+        if conflicts <= best_state[0]:
             best_state = (conflicts, wizards.copy())
 
         n = 9 if conflicts >= 10 else 29
