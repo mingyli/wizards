@@ -16,7 +16,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
     def is_conflict(constraint):
         wi, wj, wk = constraint
         i, j, k = wizard_index[wi], wizard_index[wj], wizard_index[wk]
-        return (k > i) ^ (k > j)
+        return (k > i and k < j) or (k < i and k > j)
 
 
     # num_conflicts = lambda: sum(is_conflict(constraint) for constraint in constraints)
