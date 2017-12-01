@@ -36,12 +36,13 @@ def solve(num_wizards, num_constraints, wizards, constraints):
                 constraint_states[constraint] = True
 
     def kick(strength=1):
-        conflicts = [constraint for constraint in constraints if is_conflict(constraint)]
-        for wa, wb, wc in [random.choice(conflicts)]:
-            # in a b c swap either a c or b c
-            a, b, c = wizard_index[wa], wizard_index[wb], wizard_index[wc]
-            if random.random() < 0.5: swap(a, c)
-            else: swap(b, c)
+        for i in range(strength):
+            conflicts = [constraint for constraint in constraints if is_conflict(constraint)]
+            for wa, wb, wc in [random.choice(conflicts)]:
+                # in a b c swap either a c or b c
+                a, b, c = wizard_index[wa], wizard_index[wb], wizard_index[wc]
+                if random.random() < 0.5: swap(a, c)
+                else: swap(b, c)
         return
 
 
