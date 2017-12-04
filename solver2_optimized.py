@@ -69,6 +69,14 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         j_s = random.sample(range(num_wizards), min(swap_cap, num_wizards))
         for i, j in itertools.product(i_s, j_s):
             yield ((i, j),)
+        """
+        if num_conflicts <= 2:
+            conflicts = [constraint for constraint in constraints if is_conflict(constraint)]
+            for conflict in conflicts:
+                for w in conflict:
+                    for i in range(num_wizards):
+                        yield ((i, wizard_index[w]),)
+        """
         # if num_conflicts <= 10:
         #     k_s = random.sample(range(num_wizards), 99)
         #     for i, j, k in itertools.product(i_s, j_s, k_s):
@@ -129,11 +137,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         n = 9 if conflicts >= 10 else 29
         least_conflicts = [(float("-inf"), None)] * n
 
-
-
         for swaps in successors(conflicts):
-            # pre_swap_conflicts = conflicts
-            # print("pre_swap_conflicts", pre_swap_conflicts)
             # test these swaps
             for i, j in swaps: swap(i, j)
 
@@ -146,10 +150,6 @@ def solve(num_wizards, num_constraints, wizards, constraints):
 
             # undo changes
             for i, j in reversed(swaps): swap(i, j)
-
-            # post_swap_conflicts = conflicts
-            # print("post_swap_conflicts", post_swap_conflicts)
-            # assert pre_swap_conflicts == post_swap_conflicts
 
             heapq.heappushpop(least_conflicts, (-new_conflicts, swaps))
 
