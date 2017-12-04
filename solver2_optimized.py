@@ -93,10 +93,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         least_conflicts = [(float("-inf"), None)] * n
 
         for swaps in successors(conflicts):
-<<<<<<< HEAD
             # test these swaps
-=======
->>>>>>> ea11995a2a345e71a34fbd7e708ba563527a2c88
             for i, j in swaps: swap(i, j)
 
             new_conflicts = conflicts
