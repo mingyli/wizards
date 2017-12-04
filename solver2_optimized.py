@@ -50,7 +50,7 @@ def solve(num_wizards, num_constraints, wizards, constraints):
         """Generator for the successor states.
         Does not actually return successors to save on space.
         Returns a sequence of swaps."""
-        swap_cap = 199
+        swap_cap = 99
 
         i_s = random.sample(range(num_wizards), min(swap_cap, num_wizards))
         j_s = random.sample(range(num_wizards), min(swap_cap, num_wizards))
